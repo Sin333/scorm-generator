@@ -1,92 +1,101 @@
-import { ErrorMessage, Field, Form, Formik, FieldArray } from 'formik';
 import React, { useState } from "react";
-import * as Yup from 'yup';
 
 const GenerateScormPage = () => {
-    const [questionList, setQuestionList] = useState([{ question: '', answers: [{ answer: '123', isValid: false }] }]);
+    const [questionList, setQuestionList] = useState([{ question: '', answers: [{ answer: '', isValid: false }] }]);
 
     const addNewQuestion = () => {
         questionList.push({ question: '', answers: [{ answer: '', isValid: false }] });
         setQuestionList(questionList);
     }
 
-    const generateScorm = (values) => {
+    const generateScorm = (e) => {
+        e.preventDefault();
         debugger;
-        console.log(JSON.stringify(values));
+        console.log(JSON.stringify(questionList));
     }
 
     return <div className="d-flex flex-column">
         <p className="w-100">
             Generate SCORM
         </p>
+        <p>
+            Кол-во вопросов: {questionList.length}
+        </p>
         <div className="d-flex flex-column">
-            {questionList.map((x, index) => {
-                const currentQuestionNumber = index + 1;
-                return <Formik
-                    key={index}
-                    initialValues={x}
-                    enableReinitialize
-                    // validationSchema={Yup.object().shape({
-                    //     question: Yup.string().required('Поле обязательно для заполнения'),
-                    // })}
-                    onSubmit={(values, event) => {
-                        debugger;
-                        generateScorm(values);
-                    }}>
-                    {({ values }) => (
-                        <Form className="d-flex flex-column text-center mx-auto" style={{ width: '300px' }}>
-                            <hr />
-                            <h1>Вопрос №{currentQuestionNumber}</h1>
+            <form className='d-flex flex-column' onSubmit={(e) => generateScorm(e)}>
+                {
+                    questionList.map((questionItem, questionIndex) => {
+                        return <React.Fragment key={questionIndex}>
                             <div className="d-flex flex-column">
-                                <Field className="mt-2" name="question" type="text" placeholder="Вопрос" />
-                                <ErrorMessage name="question" component="span" className="text-danger" />
+                                <div className='d-flex flex-row'>
+                                    <h1>Вопрос №{questionIndex + 1}</h1>
+                                </div>
+                                <input type="text" placeholder={`Вопрос ${questionIndex + 1}`} onChange={(e) => {
+                                    let newCollection = [...questionList];
+                                    newCollection[questionIndex].question = e.target.value;
+                                    setQuestionList(newCollection);
+                                }} />
                             </div>
-                            <FieldArray
-                                name="answers"
-                                render={arrayHelpers => (
-                                    <div>
-                                        {
-                                            arrayHelpers.form.values.answers.map((answerItem, index) => (
-                                                <div key={index}>
-                                                    {/** both these conventions do the same */}
-                                                    <Field name={`arrayHelpers[${index}].answer`} />
-                                                    <label>
-                                                        <Field type="checkbox" name={`answers[${index}].isValid`} onChange={(e) => {
-                                                            const currentValue = answerItem.isValid;
-                                                            const newValue = currentValue ? false : true;
-                                                            arrayHelpers.form.setFieldValue(`answers[${index}].isValid`, newValue);
-                                                        }} />
-                                                        {`${(answerItem.isValid)}`}
-                                                    </label>
-                                                </div>
-                                            ))
-                                        }
-                                        <button
-                                            type="button"
-                                            onClick={() => arrayHelpers.push({ answer: '', isValid: false })}>
-                                            +
-                                        </button>
-                                    </div>
-                                )}
-                            />
-                            <button type="submit" className="btn btn-primary mt-2">
-                                Сгенерировать SCORM пакет
+                            <p className='mt-2 mb-1'>
+                                Ответы
+                            </p>
+                            {
+                                questionItem.answers.map((answerItem, answerIndex) => {
+                                    return <React.Fragment key={answerIndex}>
+                                        <input type="text" placeholder={`Ответ ${answerIndex + 1}`} onChange={(e) => {
+                                            let newCollection = [...questionList];
+                                            newCollection[questionIndex].answers[answerIndex].answer = e.target.value;
+                                            setQuestionList(newCollection);
+                                        }} />
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                onChange={(e) => {
+                                                    let newCollection = [...questionList];
+                                                    newCollection[questionIndex].answers[answerIndex].isValid = e.target.checked;
+                                                    setQuestionList(newCollection);
+                                                }}
+                                                // name={key}
+                                                checked={answerItem.isValid}
+                                            />
+                                            {`${(answerItem.isValid) ? 'Правильный' : 'Неправильный'}`}
+                                        </label>
+                                    </React.Fragment>
+                                })
+                            }
+                            <button className='btn btn-primary' type="button" onClick={() => {
+                                let newCollection = [...questionList];
+                                newCollection[questionIndex].answers.push({ answer: '', isValid: false });
+                                setQuestionList(newCollection);
+                            }}>
+                                Добавить ответ
                             </button>
                             <hr />
-                        </Form>
-                    )}
-                </Formik>;
-            })}
-            <div className="d-flex flex-row mt-2 mx-auto">
-                <button className="btn btn-primary me-2" onClick={e => addNewQuestion()}>
-                    Добавить новый вопрос
-                </button>
-                <button className="btn btn-primary" onClick={e => generateScorm()}>
-                    Сгенерировать SCORM пакет
-                </button>
-            </div>
+                        </React.Fragment>
+                    })
+                }
+                <div className='d-flex flex-row mx-auto'>
+                    <button type='submit' className="btn btn-success">
+                        Сгенерировать SCORM пакет
+                    </button>
+                    <button type='button' className="btn btn-primary mx-2" onClick={e => {
+                        let newCollection = [...questionList];
+                        newCollection.push({ question: '', answers: [{ answer: '123', isValid: false }] })
+                        setQuestionList(newCollection);
+                    }}>
+                        Добавить новый вопрос
+                    </button>
+                    <button className='btn btn-danger' onClick={(e) => {
+                        let newCollection = [...questionList];
+                        newCollection.pop();
+                        setQuestionList(newCollection);
+                    }}>
+                        Удалить последний вопрос
+                    </button>
+                </div>
+            </form>
         </div>
-    </div>;
+    </div>
 }
 
 export default GenerateScormPage;
