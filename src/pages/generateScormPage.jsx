@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as scormHelper from '../utils/scormHelper';
 
 const GenerateScormPage = () => {
     const [questionList, setQuestionList] = useState([{ question: '', answers: [{ answer: '', isValid: false }] }]);
@@ -10,8 +11,10 @@ const GenerateScormPage = () => {
 
     const generateScorm = (e) => {
         e.preventDefault();
-        debugger;
         console.log(JSON.stringify(questionList));
+        const jsonScorm = scormHelper.generateScormJson(questionList);
+        console.log('GENERATED JSON\n');
+        console.log(JSON.stringify(jsonScorm));
     }
 
     return <div className="d-flex flex-column">
