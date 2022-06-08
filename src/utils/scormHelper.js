@@ -28,7 +28,7 @@ export const generateNewQuestion = (item = { question: '', answers: [{ answer: '
 
     newItem.C.chs = item.answers.map(function (x) {
         let localAnswer = emptyItemAnswer();
-        localAnswer.t.h = `"<p style=\"text-align:left;line-height:1.5em;padding-top:0em;padding-bottom:0em;font-size:16px;font-family:fnt0_56902;color:#000000;font-weight:normal;font-style:normal\"><span style=\"color:#000000;text-decoration:none;font-size:16px;font-family:fnt0_56902;font-weight:normal;font-style:normal;\">${x.answer}</span></p>"`
+        localAnswer.t.h = `<p style=\"text-align:left;line-height:1.5em;padding-top:0em;padding-bottom:0em;font-size:16px;font-family:fnt0_56902;color:#000000;font-weight:normal;font-style:normal\"><span style=\"color:#000000;text-decoration:none;font-size:16px;font-family:fnt0_56902;font-weight:normal;font-style:normal;\">${x.answer}</span></p>`
         localAnswer.t.a = `<p>${x.answer}</p>`;
         localAnswer.t.d = [x.answer];
         localAnswer.c = x.isValid;
